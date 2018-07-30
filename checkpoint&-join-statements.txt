@@ -1,0 +1,88 @@
+Exercises
+Submit your answers to the following questions.
+
+1. How do you find related data held in two separate data tables?
+
+Using JOIN statements to see the data that meets the match conditions.
+
+2. Explain, in your own words, the difference between an INNER JOIN, LEFT OUTER JOIN, and RIGHT OUTER JOIN. Give a real-world example for each.
+
+INNER JOIN only shows rows that match the condition in the ON clause, any row not matching the condition will not be returned in the result. ex: A table of auto parts with ID numbers for car models and a table of car models with more information about them. INNER JOINing the two tables ON the car model ID number would only return items that matched, parts that did not have the matching car in the cars table would not be returned, and cars that did not have matching parts in the parts table would not be returned.
+query:
+SELECT parts.name, cars.name FROM cars JOIN parts ON parts.car_id = cars.id;
+
+LEFT OUTER JOIN will show all rows in the first table, with matched values showing as they would with an INNER JOIN, and unmatched values showing a null value for the columns in the second table where there was not a match. ex: using the same cars and parts tables from above, a LEFT OUTER join of the same criteria would return all cars in the list with null values where there were not parts to match.
+query:
+SELECT parts.name, cars.name FROM cars LEFT OUTER JOIN parts ON parts.car_id = cars.id;
+
+RIGHT OUTER JOIN, essentially the opposite of LEFT OUTER JOIN, will show all items in the second table, and display null values where there were not matches with the first table. ex:
+using the same cars and parts tables as above, and the same join criteria but with a RIGHT OUTER JOIN, all parts would be returned in the list, with null values for unmatched rows in the first table.
+
+3. Define primary key and foreign key. Give a real-world example for each.
+
+A primary key is a column in a table where each cell in the column is unique. A foreign key can have repeated values and usually refers to the primary key of another table to allow them to join. An example of a primary key would be a product ID number column in table of products, each product ID number must be completely unique and not shared by any two products. An example of a foreign key could be could be the same product ID numbers in a table of orders of those products. The order numbers must be unique and the order number column would be the primary key in that table but the product ID numbers in the product ID column could repeat anywhere since any given order could be an order for the same product. This would make the product ID column in the orders table the foreign key.
+
+4. Define aliasing.
+
+Using a different, typically shorter or abbreviated name when calling a table in a join statement. The table can then be referred to by its abbreviated name for convenience for the rest of the statement.
+
+5. Change this query so that you are using aliasing:
+
+original:
+
+SELECT professor.name, compensation.salary,
+compensation.vacation_days FROM professor JOIN
+compensation ON professor.id =
+compensation.professor_id;
+
+change:
+
+SELECT p.name, c.salary,
+c.vacation_days FROM professor AS p JOIN
+compensation AS c ON p.id =
+c.professor_id;
+
+6. Why would you use a NATURAL JOIN? Give a real-world example.
+NATURAL JOIN joins 2 columns in 2 tables that have the same column name in both tables, the columns don't have to named in the query. A NATURAL JOIN could be used in a scenario where you needed to find common information in 2 tables quickly but were not sure which information was shared, a NATURAL JOIN would return the shared columns for you.
+
+7. Using this Employee schema and data, write queries to find the following information:
+
+List all employees and all shifts.
+
+SELECT employees.name FROM employees;
+SELECT * FROM shifts;
+
+
+8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+
+Create a list of all volunteers. If the volunteer is fostering a dog, include each dog as well.
+
+SELECT volunteers.first_name, dogs.name FROM volunteers LEFT OUTER JOIN dogs ON volunteers.foster_dog_id = dogs.id;
+
+The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social media promotion which posts recent successful adoptions.
+
+SELECT cats.name, adopters.first_name, adopters.last_name, cat_adoptions.date FROM cat_adoptions JOIN cats ON cat_adoptions.cat_id = cats.id JOIN adopters ON cat_adoptions.adopter_id = adopters.id WHERE cat_adoptions.date > CURRENT_DATE - INTERVAL '30 DAYS';
+
+Create a list of adopters who have not yet chosen a dog to adopt.
+
+SELECT adopters.first_name FROM adopters LEFT JOIN dog_adoptions ON adopters.id = dog_adoptions.adopter_id WHERE dog_adoptions.adopter_id IS NULL;
+
+Lists of all cats and all dogs who have not been adopted.
+
+The name of the person who adopted Rosco.
+
+9. Using this Library schema and data, write queries applying the following scenarios and include the results:
+
+To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+
+SELECT patrons.name, holds.rank
+FROM holds JOIN patrons ON holds.patron_id = patrons.id
+NATURAL JOIN books WHERE books.title = 'Advanced Potion-Making'
+ORDER BY rank ASC;
+
+List all of the library patrons. If they have one or more books checked out, list the books with the patrons.
+
+SELECT patrons.name, books.title
+FROM transactions JOIN books
+ON books.isbn = transactions.isbn AND transactions.checked_out_date IS NOT NULL AND transactions.checked_in_date IS NULL
+RIGHT OUTER JOIN patrons ON transactions.patron_id = patrons.id;
